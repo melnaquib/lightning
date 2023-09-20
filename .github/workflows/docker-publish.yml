@@ -3,15 +3,16 @@ name: docker-build-push
 on:
   push:
     branches:
-      - "testnet-**"
+      - testnet-**
+      - chore/dockerfile-support
     paths:
-      - "core/**"
-      - "etc/**"
-      - "lib/**"
-      - "services/**"
-      - "Cargo.toml"
-      - ".github/workflows/docker-publish.yml"
-      - "Dockerfile"
+      - core/**
+      - etc/**
+      - lib/**
+      - services/**
+      - Cargo.toml
+      - .github/workflows/docker-publish.yml
+      - Dockerfile
   workflow_dispatch:
 
 env:
