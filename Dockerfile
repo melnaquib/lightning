@@ -1,6 +1,5 @@
 FROM rust:latest as builder
-ARG PROFILE=release
-WORKDIR /lightning
+WORKDIR /builder
 
 RUN apt-get update
 RUN apt-get install -y \
@@ -19,10 +18,9 @@ COPY . .
 ENV RUST_BACKTRACE=1
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/lightning/target \
-    cargo build --profile $PROFILE --bin lightning-cli && \
-    cargo strip && \
-    mv /lightning/target/release/lightning-cli /lightning-cli
+    --mount=type=cache,target=/builder/target \
+    cargo build --profile release --bin lightning-cli && \
+    cargo strip
 
 FROM ubuntu:latest
 
@@ -31,6 +29,6 @@ RUN apt-get update -yq && \
     libssl-dev \
     ca-certificates
 
-COPY --from=builder /lightning/target/release/lightning-cli /usr/local/bin/lgtn
+COPY --from=builder /builder/target/release/lightning-cli /usr/local/bin/lgtn
 
 ENTRYPOINT ["lgtn", "run"]
