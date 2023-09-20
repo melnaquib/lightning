@@ -17,10 +17,13 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 COPY . .
 ENV RUST_BACKTRACE=1
 
+RUN mkdir -p /builder/target/release
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/builder/target \
+    --mount=type=cache,target=/builder/target/release \
     cargo build --profile release --bin lightning-cli && \
-    cargo strip
+    cargo strip && \
+    ls -la /builder && \
+    ls -la /builder/target/release
 
 FROM ubuntu:latest
 
