@@ -20,9 +20,9 @@ ENV RUST_BACKTRACE=1
 
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/lightning/target \
-    cargo build --profile $PROFILE --bin lightning-node && \
-    cargo strip  && \
-    mv /lightning/target/release/lightning-node /lightning-node
+    cargo build --profile $PROFILE --bin lightning-cli && \
+    cargo strip && \
+    mv /lightning/target/release/lightning-cli /lightning-cli
 
 FROM ubuntu:latest
 
@@ -31,6 +31,6 @@ RUN apt-get update -yq && \
     libssl-dev \
     ca-certificates
 
-COPY --from=builder /lightning/target/release/lightning-node /usr/local/bin/lgtn
+COPY --from=builder /lightning/target/release/lightning-cli /usr/local/bin/lgtn
 
 ENTRYPOINT ["lgtn", "run"]
