@@ -22,15 +22,15 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/build/target \
     cargo build --profile release --bin lightning-cli && \
     cargo strip && \
-    mv /build/target/release/lightning-cli /build
+    cp /build/target/release/lightning-cli /build
 
 FROM ubuntu:latest
 
-RUN apt-get update -yq && \
-    apt-get install -yq \
+RUN apt-get update && \
+    apt-get install -y \
     libssl-dev \
     ca-certificates
 
-COPY --from=build /build/lightning-cli /usr/local/bin
+COPY --from=build /build/lightning-cli /usr/local/bin/lgtn
 
 ENTRYPOINT ["lgtn", "run"]

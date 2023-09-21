@@ -1,4 +1,4 @@
-name: Docker (Build & GHCR publish)
+name: Docker (Build & Publish)
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - etc/**
       - lib/**
       - services/**
-      - Cargo.toml
+      - Cargo.*
       - .github/workflows/docker-publish.yml
       - Dockerfile
   workflow_dispatch:
@@ -20,8 +20,7 @@ env:
   LIGHTNING_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
-    name: Docker build and publish
+  docker:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,8 +33,8 @@ jobs:
           driver-opts: |
             image=moby/buildkit:master
 
-      - name: Log into registry
-        uses: docker/login-action@v2
+      - name: Login to registry
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -54,10 +53,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # TIAS the experimental https://github.com/moby/buildkit#github-actions-cache-experimental
           cache-from: type=gha
           cache-to: type=gha,mode=max
