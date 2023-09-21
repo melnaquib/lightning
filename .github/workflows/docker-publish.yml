@@ -1,4 +1,4 @@
-name: Docker build publisher
+name: Docker (Build & GHCR publish)
 
 on:
   push:
@@ -42,8 +42,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
-        id: lightning-meta
-        uses: docker/metadata-action@v4.0.1
+        id: meta
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.LIGHTNING_IMAGE_NAME }}
           tags: |
@@ -57,8 +57,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.lightning-meta.outputs.tags }}
-          labels: ${{ steps.lightning-meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           # TIAS the experimental https://github.com/moby/buildkit#github-actions-cache-experimental
           cache-from: type=gha
           cache-to: type=gha,mode=max
