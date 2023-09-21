@@ -13,7 +13,6 @@ on:
       - Cargo.*
       - .github/workflows/docker-publish.yml
       - Dockerfile
-  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
