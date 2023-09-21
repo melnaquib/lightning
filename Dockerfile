@@ -1,3 +1,5 @@
+# The Fleek Network Lightning Docker container is hosted at:
+# https://github.com/fleek-network/lightning/pkgs/container/lightning
 FROM rust:latest as build
 WORKDIR /build
 
@@ -25,6 +27,9 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     cp /build/target/release/lightning-cli /build
 
 FROM ubuntu:latest
+ARG LIGHTNING_PORTS="4069 4200 6969 18000 18101 18102"
+WORKDIR /root
+SHELL ["/bin/bash", "-c"] 
 
 RUN apt-get update && \
     apt-get install -y \
@@ -33,4 +38,18 @@ RUN apt-get update && \
 
 COPY --from=build /build/lightning-cli /usr/local/bin/lgtn
 
-ENTRYPOINT ["lgtn", "run"]
+COPY <<EOF /root/init
+#!/usr/bin/bash
+
+if [[ ! -d /root/.lightning/keystore ]]; then
+  lgtn key generate
+fi
+
+lgtn run
+EOF
+
+RUN chmod +x /root/init
+
+EXPOSE $LIGHTNING_PORTS
+
+ENTRYPOINT ["/root/init"]
