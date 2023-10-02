@@ -5,6 +5,7 @@ on:
     # TODO: enable for main only after testnet
     branches:
       - testnet-**
+      - chore/revert-binary-back-to-lightning-node
     paths:
       - core/**
       - etc/**
