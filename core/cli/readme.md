@@ -1,8 +1,8 @@
-# lightning-cli
+# lightning-node
 
 ```bash
-$ lightning-cli -h
-Usage: lightning-cli [OPTIONS] <COMMAND>
+$ lightning-node -h
+Usage: lightning-node [OPTIONS] <COMMAND>
 
 Commands:
   run           Start the node
