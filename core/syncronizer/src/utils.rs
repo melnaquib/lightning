@@ -1,34 +1,45 @@
-use std::io::{stdin, stdout, Write};
-use std::sync::mpsc::{self, Receiver};
+use std::io::{stdout, Write};
 use std::time::{Duration, SystemTime};
 
 use lightning_interfaces::types::{EpochInfo, NodeIndex, NodeInfo};
+use tokio::io::AsyncReadExt;
 
 use crate::rpc;
 
-pub fn wait_to_next_epoch(
+pub async fn wait_to_next_epoch(
     epoch_info: EpochInfo,
-    genesis_committee: &[(NodeIndex, NodeInfo)],
-    rpc_client: &reqwest::Client,
+    genesis_committee: Vec<(NodeIndex, NodeInfo)>,
+    rpc_client: reqwest::Client,
+) -> bool {
+    let mut dummy_buffer = String::new();
+    let mut stdin = tokio::io::stdin();
+    tokio::select! {
+        _ = stdin.read_to_string(&mut dummy_buffer) => {
+            println!("received ENTER, cancel waiting loop");
+            true
+        }
+        _ = wait_loop(epoch_info, genesis_committee, rpc_client) => {
+            false
+        }
+    }
+}
+
+async fn wait_loop(
+    epoch_info: EpochInfo,
+    genesis_committee: Vec<(NodeIndex, NodeInfo)>,
+    rpc_client: reqwest::Client,
 ) {
     let mut stdout = stdout();
-    let shutdown_rx = spawn_stdin_listener();
     loop {
-        if shutdown_rx.try_recv().is_ok() {
-            println!("Exiting...");
-            std::process::exit(0);
-        }
-
         let now = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
             .as_millis() as u64;
         if now > epoch_info.epoch_end {
-            let new_epoch_info = rpc::sync_call(rpc::get_epoch_info(
-                genesis_committee.to_vec(),
-                rpc_client.clone(),
-            ))
-            .expect("Cannot reach bootstrap nodes");
+            let new_epoch_info =
+                rpc::get_epoch_info(genesis_committee.to_vec(), rpc_client.clone())
+                    .await
+                    .expect("Cannot reach bootstrap nodes");
             if new_epoch_info.epoch > epoch_info.epoch {
                 // The new epoch started, time to start the node.
                 println!();
@@ -48,18 +59,6 @@ pub fn wait_to_next_epoch(
             std::thread::sleep(Duration::from_millis(100));
         }
     }
-}
-
-fn spawn_stdin_listener() -> Receiver<()> {
-    let (tx, rx) = mpsc::channel();
-    std::thread::spawn(move || {
-        loop {
-            let mut buffer = String::new();
-            stdin().read_line(&mut buffer).unwrap();
-            tx.send(()).unwrap();
-        }
-    });
-    rx
 }
 
 fn get_timer(duration: Duration) -> String {
