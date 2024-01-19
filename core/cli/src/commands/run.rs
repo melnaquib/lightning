@@ -74,7 +74,8 @@ where
 
                 // Sleep for a bit but provide some feedback, some of our proccesses take a few milliseconds to drop from memory
                 warn!("Preparing to load checkpoint, Restarting services");
-                tokio::time::sleep(Duration::from_secs(3)).await;
+                tokio::time::sleep(Duration::from_secs(30)).await;
+                
                 // start local env in checkpoint mode to seed database with the new checkpoint
                 C::ApplicationInterface::load_from_checkpoint(
                     &app_config, checkpoint, checkpoint_hash)?;
