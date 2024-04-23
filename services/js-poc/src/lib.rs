@@ -216,16 +216,8 @@ async fn handle_request(
             let string = serde_v8::from_v8::<String>(scope, local)
                 .context("failed to deserialize response string")?;
 
-            if connection.is_http_request() {
-                // Check and make sure isnt JSON of HttpResponse
-                if let Ok(http_response) = serde_json::from_str::<HttpResponse>(&string) {
-                    respond_to_client_with_http_response(connection, http_response).await?;
-                } else {
-                    respond_to_client(connection, string.as_bytes(), is_http).await?;
-                }
-            } else {
                 respond_to_client(connection, string.as_bytes(), is_http).await?;
-            }
+            
         } else {
             // todo() unest this
             if is_http {
@@ -353,7 +345,7 @@ async fn respond_to_client_with_http_response(
 
     // send body back
     connection
-        .write_payload(&response.body)
+        .write_payload(response.body.as_bytes())
         .await
         .context("failed to send body")?;
 
