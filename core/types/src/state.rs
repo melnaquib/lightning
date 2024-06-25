@@ -263,7 +263,7 @@ impl Default for NodePorts {
             worker: 4311,
             mempool: 4210,
             handshake: Default::default(),
-            rpc: 4240,
+            rpc: 4230,
             pinger: 4350,
         }
     }
@@ -292,7 +292,7 @@ pub struct HandshakePorts {
 impl Default for HandshakePorts {
     fn default() -> Self {
         Self {
-            http: 80,
+            http: 4220,
             webrtc: 4320,
             webtransport: 4321,
         }

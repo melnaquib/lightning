@@ -40,11 +40,6 @@ impl Default for Config {
                 },
                 Gateway {
                     protocol: Protocol::Https,
-                    authority: "cf-ipfs.com".to_string(),
-                    request_format: RequestFormat::CidLast,
-                },
-                Gateway {
-                    protocol: Protocol::Https,
                     authority: "fleek.ipfs.io".to_string(),
                     request_format: RequestFormat::CidLast,
                 },
