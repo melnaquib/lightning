@@ -6239,6 +6239,7 @@ dependencies = [
  "lightning-blockstore-server",
  "lightning-broadcast",
  "lightning-consensus",
+ "lightning-dack-aggregator",
  "lightning-fetcher",
  "lightning-forwarder",
  "lightning-handshake",
