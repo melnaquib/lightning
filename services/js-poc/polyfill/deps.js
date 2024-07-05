@@ -24,5 +24,6 @@ export * as stream from 'node:stream'
 export * as string_decoder from 'node:string_decoder'
 export * as url from 'node:url'
 export * as zlib from 'node:zlib'
+export * as fs from 'node:fs'
 
 export * as util from './overrides/util.js'

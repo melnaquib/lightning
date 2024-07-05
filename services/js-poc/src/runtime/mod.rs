@@ -12,6 +12,7 @@ use deno_core::serde_v8::{self, Serializable};
 use deno_core::url::Url;
 use deno_core::v8::{self, CreateParams, Global, Value};
 use deno_core::{JsRuntime, ModuleSpecifier, PollEventLoopOptions, RuntimeOptions};
+use deno_fs::deno_fs;
 use deno_crypto::deno_crypto;
 use deno_url::deno_url;
 use deno_webgpu::deno_webgpu;
@@ -101,6 +102,7 @@ impl Runtime {
                 // WebApi subset
                 deno_webidl::init_ops(),
                 deno_console::init_ops(),
+                deno_fs::init_ops(),
                 deno_url::init_ops(),
                 deno_web::init_ops::<Permissions>(Arc::new(Default::default()), None),
                 deno_net::init_ops::<Permissions>(None, None),

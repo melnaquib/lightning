@@ -14,6 +14,7 @@ extension!(
     fleek,
     deps = [
         deno_webidl,
+        deno_fs,
         deno_console,
         deno_url,
         deno_web,

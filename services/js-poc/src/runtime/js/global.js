@@ -20,7 +20,6 @@ import { URL, URLSearchParams } from "ext:deno_url/00_url.js";
 import { URLPattern } from "ext:deno_url/01_urlpattern.js";
 
 import { DOMException } from "ext:deno_web/01_dom_exception.js";
-import * as event from "ext:deno_web/02_event.js";
 import * as timers from "ext:deno_web/02_timers.js";
 import * as abortSignal from "ext:deno_web/03_abort_signal.js";
 import * as globalInterfaces from "ext:deno_web/04_global_interfaces.js";
@@ -46,6 +45,8 @@ import * as crypto from "ext:deno_crypto/00_crypto.js";
 
 import { loadWebGPU } from "ext:deno_webgpu/00_init.js";
 import * as webgpuSurface from "ext:deno_webgpu/02_surface.js";
+
+import * as event from "ext:deno_fs/30_fs.js";
 
 import { Fleek } from "ext:fleek/fleek.js";
 

@@ -8,6 +8,7 @@ use base64::Engine;
 use deno_canvas::deno_canvas;
 use deno_console::deno_console;
 use deno_core::extension;
+use ::deno_fs::{deno_fs, FsPermissions};
 use deno_crypto::deno_crypto;
 use deno_url::deno_url;
 use deno_webgpu::deno_webgpu;
@@ -19,6 +20,7 @@ extension!(
     deps = [
         deno_webidl,
         deno_console,
+        deno_fs,
         deno_url,
         deno_web,
         deno_fetch,
@@ -103,6 +105,7 @@ fn main() {
     let extensions = vec![
         deno_webidl::init_ops_and_esm(),
         deno_console::init_ops_and_esm(),
+        deno_fs::init_ops_and_esm(),
         deno_url::init_ops_and_esm(),
         deno_web::init_ops_and_esm::<Permissions>(Arc::new(Default::default()), None),
         deno_net::init_ops_and_esm::<Permissions>(None, None),
