@@ -34,6 +34,8 @@ import * as compression from "ext:deno_web/14_compression.js";
 import * as performance from "ext:deno_web/15_performance.js";
 import * as imageData from "ext:deno_web/16_image_data.js";
 
+import * as io from "ext:deno_io/12_io.js";
+
 import * as headers from "ext:deno_fetch/20_headers.js";
 import * as formData from "ext:deno_fetch/21_formdata.js";
 import * as request from "ext:deno_fetch/23_request.js";
@@ -46,7 +48,7 @@ import * as crypto from "ext:deno_crypto/00_crypto.js";
 import { loadWebGPU } from "ext:deno_webgpu/00_init.js";
 import * as webgpuSurface from "ext:deno_webgpu/02_surface.js";
 
-import * as event from "ext:deno_fs/30_fs.js";
+import * as fs from "ext:deno_fs/30_fs.js";
 
 import { Fleek } from "ext:fleek/fleek.js";
 

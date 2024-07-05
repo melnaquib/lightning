@@ -102,7 +102,6 @@ impl Runtime {
                 // WebApi subset
                 deno_webidl::init_ops(),
                 deno_console::init_ops(),
-                deno_fs::init_ops(),
                 deno_url::init_ops(),
                 deno_web::init_ops::<Permissions>(Arc::new(Default::default()), None),
                 deno_net::init_ops::<Permissions>(None, None),
@@ -110,6 +109,7 @@ impl Runtime {
                 deno_crypto::init_ops(None),
                 deno_webgpu::init_ops(),
                 deno_canvas::init_ops(),
+                deno_fs::init_ops(),
                 // Fleek runtime
                 fleek::init_ops(),
             ],

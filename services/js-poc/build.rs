@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::rc::Rc;
+use std::path::Path;
+use deno_core::error::AnyError;
 
 use ::deno_fetch::{deno_fetch, FetchPermissions};
 use ::deno_net::{deno_net, NetPermissions};
@@ -8,7 +11,7 @@ use base64::Engine;
 use deno_canvas::deno_canvas;
 use deno_console::deno_console;
 use deno_core::extension;
-use ::deno_fs::{deno_fs, FsPermissions};
+use ::deno_fs::{deno_fs, FsPermissions, RealFs};
 use deno_crypto::deno_crypto;
 use deno_url::deno_url;
 use deno_webgpu::deno_webgpu;
@@ -20,11 +23,12 @@ extension!(
     deps = [
         deno_webidl,
         deno_console,
-        deno_fs,
         deno_url,
         deno_web,
         deno_fetch,
         deno_crypto,
+        deno_fs,
+        deno_io,
         deno_webgpu,
         deno_canvas
     ],
@@ -85,6 +89,59 @@ impl NetPermissions for Permissions {
     }
 }
 
+impl FsPermissions for Permissions {
+    fn check_read(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_read_all(&mut self, _api_name: &str) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_read_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_partial(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_all(&mut self, _api_name: &str) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), AnyError> {
+      unreachable!("snapshotting!")
+    }
+  }
+  
+
 #[derive(Deserialize)]
 struct DenoJson {
     imports: HashMap<String, String>,
@@ -105,12 +162,13 @@ fn main() {
     let extensions = vec![
         deno_webidl::init_ops_and_esm(),
         deno_console::init_ops_and_esm(),
-        deno_fs::init_ops_and_esm(),
         deno_url::init_ops_and_esm(),
         deno_web::init_ops_and_esm::<Permissions>(Arc::new(Default::default()), None),
         deno_net::init_ops_and_esm::<Permissions>(None, None),
         deno_fetch::init_ops_and_esm::<Permissions>(Default::default()),
         deno_crypto::init_ops_and_esm(None),
+        deno_fs::init_ops_and_esm::<Permissions>(Rc::new(RealFs)),
+        deno_io::deno_io::init_ops_and_esm(Default::default()),
         deno_webgpu::init_ops_and_esm(),
         deno_canvas::init_ops_and_esm(),
         fleek::init_ops_and_esm(),

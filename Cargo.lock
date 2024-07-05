@@ -4105,6 +4105,7 @@ dependencies = [
  "deno_crypto",
  "deno_fetch",
  "deno_fs",
+ "deno_io",
  "deno_net",
  "deno_url",
  "deno_web",
