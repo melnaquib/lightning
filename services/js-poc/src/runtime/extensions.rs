@@ -20,6 +20,7 @@ extension!(
         deno_net,
         deno_fetch,
         deno_crypto,
+        deno_fs,
         deno_webgpu,
         deno_canvas
     ],

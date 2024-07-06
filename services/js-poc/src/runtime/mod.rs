@@ -14,8 +14,11 @@ use deno_core::v8::{self, CreateParams, Global, Value};
 use deno_core::{JsRuntime, ModuleSpecifier, PollEventLoopOptions, RuntimeOptions};
 use deno_crypto::deno_crypto;
 use deno_url::deno_url;
+use std::path::Path;
 use deno_webgpu::deno_webgpu;
 use deno_webidl::deno_webidl;
+use ::deno_fs::{deno_fs, FsPermissions, RealFs};
+
 use extensions::fleek;
 
 use self::module_loader::FleekModuleLoader;
@@ -92,10 +95,74 @@ impl NetPermissions for Permissions {
     }
 }
 
+impl FsPermissions for Permissions {
+    // fn check_open<'a>(
+    //   &mut self,
+    //   _resolved: bool,
+    //   _read: bool,
+    //   _write: bool,
+    //   _path: &'a Path,
+    //   _api_name: &str,
+    // ) -> Result<std::borrow::Cow<'a, Path>, FsError> {
+    //   unreachable!("fs disabled!")
+    // }
+  
+    fn check_read(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_read")
+    }
+  
+    fn check_read_all(&mut self, _api_name: &str) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_read_all")
+    }
+  
+    fn check_read_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_read_blind")
+    }
+  
+    fn check_write(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_write")
+    }
+  
+    fn check_write_partial(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_write_partial")
+    }
+  
+    fn check_write_all(&mut self, _api_name: &str) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_write_all")
+    }
+  
+    fn check_write_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("fs disabled! check_write_blind")
+    }
+}
+
 impl Runtime {
     /// Create a new runtime
     pub fn new(mut location: Url) -> Result<Self> {
         let tape = Tape::new(location.clone());
+        let fs = Rc::new(RealFs);
         let mut deno = JsRuntime::new(RuntimeOptions {
             extensions: vec![
                 // WebApi subset
@@ -106,6 +173,7 @@ impl Runtime {
                 deno_net::init_ops::<Permissions>(None, None),
                 deno_fetch::init_ops::<Permissions>(Options::default()),
                 deno_crypto::init_ops(None),
+                deno_fs::init_ops::<Permissions>(fs.clone()),
                 deno_webgpu::init_ops(),
                 deno_canvas::init_ops(),
                 // Fleek runtime

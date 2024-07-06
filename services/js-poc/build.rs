@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::rc::Rc;
 
 use ::deno_fetch::{deno_fetch, FetchPermissions};
 use ::deno_net::{deno_net, NetPermissions};
@@ -12,6 +13,9 @@ use deno_crypto::deno_crypto;
 use deno_url::deno_url;
 use deno_webgpu::deno_webgpu;
 use deno_webidl::deno_webidl;
+use ::deno_fs::{deno_fs, FsPermissions, RealFs};
+use std::path::Path;
+
 use serde::Deserialize;
 
 extension!(
@@ -23,6 +27,7 @@ extension!(
         deno_web,
         deno_fetch,
         deno_crypto,
+        deno_fs,
         deno_webgpu,
         deno_canvas
     ],
@@ -83,6 +88,59 @@ impl NetPermissions for Permissions {
     }
 }
 
+impl FsPermissions for Permissions {
+    fn check_read(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_read_all(&mut self, _api_name: &str) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_read_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_partial(
+      &mut self,
+      _path: &Path,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_all(&mut self, _api_name: &str) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  
+    fn check_write_blind(
+      &mut self,
+      _path: &Path,
+      _display: &str,
+      _api_name: &str,
+    ) -> Result<(), deno_core::error::AnyError> {
+      unreachable!("snapshotting!")
+    }
+  }
+
+
 #[derive(Deserialize)]
 struct DenoJson {
     imports: HashMap<String, String>,
@@ -100,6 +158,7 @@ fn create_integrity_url(import: &str, hex_sha256: &str) -> String {
 }
 
 fn main() {
+    let fs = Rc::new(RealFs);
     let extensions = vec![
         deno_webidl::init_ops_and_esm(),
         deno_console::init_ops_and_esm(),
@@ -108,6 +167,7 @@ fn main() {
         deno_net::init_ops_and_esm::<Permissions>(None, None),
         deno_fetch::init_ops_and_esm::<Permissions>(Default::default()),
         deno_crypto::init_ops_and_esm(None),
+        deno_fs::init_ops::<Permissions>(fs.clone()),
         deno_webgpu::init_ops_and_esm(),
         deno_canvas::init_ops_and_esm(),
         fleek::init_ops_and_esm(),
